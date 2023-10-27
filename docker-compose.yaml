@@ -15,7 +15,7 @@ services:
      - PATIENTS_SERVICE_URL=https://192.168.1.10:81/api/
      - CORE_TURNS_SERVICE_URL=http://core:3001/
      - CORE_APPOINTMENTS_SERVICE_URL=http://core:3001/
-     - CLIENT_APP_URL=http://frontend:3000
+     - CLIENT_APP_URL=http://localhost:3000
  frontend:
    build: ./hro-tms-frontend
    container_name: frontend_c
@@ -58,11 +58,6 @@ services:
    restart: always
    ports:
      - '27017:27017'
-   environment:
-     - MONGO_INITDB_ROOT_USERNAME=admin
-     - MONGO_INITDB_ROOT_PASSWORD=adminpassword
-   volumes:
-     - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
    networks:
      - hro_tms_network
 networks:
