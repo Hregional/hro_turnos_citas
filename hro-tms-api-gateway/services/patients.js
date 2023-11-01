@@ -1,11 +1,6 @@
 import axios from "axios";
-import * as https from "https";
 import { buildQueryStrinParams } from "../utils/helpers";
 import { SERVICES } from "../utils/services";
-
-const httpsAgent = new https.Agent({
-  rejectUnauthorized: false,
-});
 
 const MAX_PATIENTS_LENGTH_ALLOWED = 1000;
 const HTTP_STATUS_CODE_CONTENT_TOO_LARGE = 413;
@@ -32,8 +27,7 @@ export const searchPatientsByClinicalHistoryService = async (
 ) => {
   try {
     const { status, data } = await axios.get(
-      `${SERVICES.patients.searchPatientsByClinicHistory}${clinicalHistory}`,
-      { httpsAgent }
+      `${SERVICES.patients.searchPatientsByClinicHistory}${clinicalHistory}`
     );
     return limitPatientsLength(status, data);
   } catch (error) {
@@ -48,7 +42,7 @@ export const searchPatientsByNamesService = async (params) => {
     const requestUrl = `${
       SERVICES.patients.searchPatientsByNames
     }${buildQueryStrinParams(params)}`;
-    const { status, data } = await axios.get(requestUrl, { httpsAgent });
+    const { status, data } = await axios.get(requestUrl);
     return limitPatientsLength(status, data);
   } catch (error) {}
 };

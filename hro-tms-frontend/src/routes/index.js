@@ -5,8 +5,8 @@ export const APP_URLS = {
 };
 
 export const apiGatewayURL =
-  process.env.APIGW_SERVICE_URL || "http://localhost:3002/";
-
+  process.env.REACT_APP_APIGW_SERVICE_URL || "http://localhost:3002/";
+  
 export const ENDPOINTS = {
   auth: {
     getAuthenticationToken: `${apiGatewayURL}authentication/get-access-token/`,

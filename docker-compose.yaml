@@ -1,65 +1,64 @@
 version: "3"
 services:
- apigateway:
-   build: ./hro-tms-api-gateway
-   container_name: apigateway_c
-   ports:
-     - '3002:3002'
-   volumes:
-     - ./hro-tms-api-gateway:/app
-     - /app/node_modules
-   networks:
-     - hro_tms_network
-   environment:
-     - AUTH_SERVICE_URL=http://auth:8000/authentication_service/
-     - PATIENTS_SERVICE_URL=https://192.168.1.10:81/api/
-     - CORE_TURNS_SERVICE_URL=http://core:3001/
-     - CORE_APPOINTMENTS_SERVICE_URL=http://core:3001/
-     - CLIENT_APP_URL=http://localhost:3000
- frontend:
-   build: ./hro-tms-frontend
-   container_name: frontend_c
-   ports:
-     - '3000:3000'
-   volumes:
-     - ./hro-tms-frontend:/app
-     - /app/node_modules
-   stdin_open: true
-   tty: true
-   networks:
-     - hro_tms_network
-   environment:
-     - APIGW_SERVICE_URL=http://apigateway:3002/
- auth:
-   build: './hro_tms_auth_service'
-   container_name: auth_c
-   restart: always
-   ports:
-     - '8000:8000'
-   environment:
-     - DJANGO_SETTINGS_MODULE=hro_tms_auth_service.settings
-   networks:
-     - hro_tms_network
- core:
-   build: ./hro-tms-core
-   container_name: core_c
-   ports:
-     - '3001:3001'
-   volumes:
-     - ./hro-tms-core:/app
-     - /app/node_modules
-   networks:
-     - hro_tms_network
-   environment:
-     - MONGO_DB_SERVICE_URL=mongodb://mongodb:27017/
- mongodb:
-   image: mongo:4.4
-   container_name: mongodb_c
-   restart: always
-   ports:
-     - '27017:27017'
-   networks:
-     - hro_tms_network
+  apigateway:
+    build: ./hro-tms-api-gateway
+    container_name: apigateway_c
+    ports:
+      - "0.0.0.0:3002:3002"
+    volumes:
+      - ./hro-tms-api-gateway:/app
+      - /app/node_modules
+    networks:
+      - hro_tms_network
+    environment:
+      - AUTH_SERVICE_URL=http://auth:8000/authentication_service/
+      - PATIENTS_SERVICE_URL=https://192.168.1.10:81/api/
+      - CORE_TURNS_SERVICE_URL=http://core:3001/
+      - CORE_APPOINTMENTS_SERVICE_URL=http://core:3001/
+  frontend:
+    build: ./hro-tms-frontend
+    container_name: frontend_c
+    ports:
+      - "0.0.0.0:3000:3000"
+    volumes:
+      - ./hro-tms-frontend:/app
+      - /app/node_modules
+    stdin_open: true
+    tty: true
+    networks:
+      - hro_tms_network
+    environment:
+      - REACT_APP_APIGW_SERVICE_URL=http://192.168.1.107:3002/ # REEMPLAZAR ESTA IP POR LA IP DEL HOST REAL
+  auth:
+    build: "./hro_tms_auth_service"
+    container_name: auth_c
+    restart: always
+    ports:
+      - "0.0.0.0:8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=hro_tms_auth_service.settings
+    networks:
+      - hro_tms_network
+  core:
+    build: ./hro-tms-core
+    container_name: core_c
+    ports:
+      - "0.0.0.0:3001:3001"
+    volumes:
+      - ./hro-tms-core:/app
+      - /app/node_modules
+    networks:
+      - hro_tms_network
+    environment:
+      - MONGO_DB_SERVICE_URL=mongodb://mongodb:27017/
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb_c
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - hro_tms_network
 networks:
- hro_tms_network:
-   driver: bridge
+  hro_tms_network:
+    driver: bridge
