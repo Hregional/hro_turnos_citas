@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Typography, Alert, Snackbar } from "@mui/material";
+import { Typography, Alert, Snackbar, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -13,7 +13,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
 import OpenInNew from "@mui/icons-material/OpenInNew";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   getTurns,
   setSnackbarFailedTurnShow,
@@ -23,12 +23,13 @@ import {
 } from "@redux/reducers/turns";
 import { APP_URLS } from "@routes";
 import { TURN_STATUS } from "@utils/constants";
-import { sortByProperty as sortArray } from "@utils/helpers";
+import { sortByProperty as sortArray, addSearchFields } from "@utils/helpers";
 
 import { StyledTableCell, StyledTableRow } from "@utils/styles";
 
 import TurnActionMenu from "./TurnActionMenu";
 import TurnsBottomNavigation from "./TurnsBottomNavigation";
+import { PersonSearch as PersonSearchIcon } from "@mui/icons-material";
 
 const buildTableHeader = () => {
   const columns = [
@@ -39,6 +40,7 @@ const buildTableHeader = () => {
     "Padre",
     "Madre",
     "Responsable",
+    "Acciones",
   ];
   return columns.map((column, index) => (
     <StyledTableCell align="left" key={`StyledTableCellKeyCell-${index}`}>
@@ -67,6 +69,12 @@ const TurnsQueue = () => {
   } = useSelector((state) => state.turns);
 
   const { filterParameter } = useSelector((state) => state.admin);
+
+  const [filterValue, setFilterValue] = useState("");
+
+  const handleFilterValueChange = (e) => {
+    setFilterValue(e.target.value.toLowerCase());
+  };
 
   const handleCloseSnackbarSuccess = () =>
     dispatch(setSnackbarSuccessTurnShow(false));
@@ -127,20 +135,11 @@ const TurnsQueue = () => {
     );
   }
 
-  const buildTableContent = () => {
-    const arrayToRender = TURNS_MAP[filterParameter];
-    if (arrayToRender.length === 0) {
-      return (
-        <StyledTableRow key="No-data-in-table-key">
-          <StyledTableCell>
-            <Alert sx={{ width: "100%" }} severity="info">
-              No hay turnos en estado {filterParameter}
-            </Alert>
-          </StyledTableCell>
-        </StyledTableRow>
-      );
-    }
-    return arrayToRender.map((turn, index) => (
+  const renderSeachTurns = () => {
+    const filteredTurns = arrayToRender.filter((turn) =>
+      turn.searchField.includes(filterValue)
+    );
+    return filteredTurns.map((turn, index) => (
       <TurnActionMenu
         turn={turn}
         index={index}
@@ -149,24 +148,26 @@ const TurnsQueue = () => {
     ));
   };
 
-  const patientsOnQueue = turnQueue.filter(
+  const processedTurnQueue = addSearchFields(turnQueue);
+
+  const patientsOnQueue = processedTurnQueue.filter(
     (turn) => turn.status === TURN_STATUS.onQueue
   );
 
   const patientsAttended = sortArray(
-    turnQueue.filter((turn) => turn.status === TURN_STATUS.attended),
+    processedTurnQueue.filter((turn) => turn.status === TURN_STATUS.attended),
     "updatedAt",
     "desc"
   );
 
   const patientsAbsent = sortArray(
-    turnQueue.filter((turn) => turn.status === TURN_STATUS.absent),
+    processedTurnQueue.filter((turn) => turn.status === TURN_STATUS.absent),
     "updatedAt",
     "desc"
   );
 
   const patientsCancelled = sortArray(
-    turnQueue.filter((turn) => turn.status === TURN_STATUS.cancelled),
+    processedTurnQueue.filter((turn) => turn.status === TURN_STATUS.cancelled),
     "updatedAt",
     "desc"
   );
@@ -176,6 +177,8 @@ const TurnsQueue = () => {
   TURNS_MAP[TURN_STATUS.attended] = patientsAttended;
   TURNS_MAP[TURN_STATUS.absent] = patientsAbsent;
   TURNS_MAP[TURN_STATUS.cancelled] = patientsCancelled;
+
+  const arrayToRender = TURNS_MAP[filterParameter];
 
   return (
     <Card variant="outlined" sx={{ marginTop: 0.3 }}>
@@ -254,12 +257,30 @@ const TurnsQueue = () => {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
               padding: "1rem",
               paddingBottom: "0",
               paddingTop: "0.25rem",
             }}
           >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "flex-end",
+                minWidth: "20rem",
+                marginTop: 1,
+              }}
+            >
+              <PersonSearchIcon
+                sx={{ color: "action.active", mr: 1, my: 0.5 }}
+              />
+              <TextField
+                id="input-with-sx"
+                label={`Buscar turno ${filterParameter}`}
+                variant="standard"
+                onChange={handleFilterValueChange}
+              />
+            </Box>
             <Typography variant="subtitle2">
               <Link
                 href={APP_URLS.queue}
@@ -282,7 +303,26 @@ const TurnsQueue = () => {
               <TableHead>
                 <TableRow>{buildTableHeader()}</TableRow>
               </TableHead>
-              <TableBody>{buildTableContent()}</TableBody>
+              <TableBody>
+                {arrayToRender.length === 0 && (
+                  <StyledTableRow key="No-data-in-table-key">
+                    <StyledTableCell>
+                      <Alert sx={{ width: "100%" }} severity="info">
+                        No hay turnos en estado {filterParameter}
+                      </Alert>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                )}
+                {!filterValue &&
+                  arrayToRender.map((turn, index) => (
+                    <TurnActionMenu
+                      turn={turn}
+                      index={index}
+                      key={"TurnActionMenuKey" + index}
+                    />
+                  ))}
+                {filterValue && renderSeachTurns()}
+              </TableBody>
             </Table>
           </TableContainer>
         </Box>

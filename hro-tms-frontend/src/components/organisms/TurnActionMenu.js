@@ -1,5 +1,11 @@
 import * as React from "react";
-import { Divider, Tooltip, Menu, MenuItem, ListItemIcon } from "@mui/material";
+import {
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ButtonGroup,
+  Button,
+} from "@mui/material";
 import {
   People,
   HowToReg,
@@ -37,44 +43,77 @@ export default function TurnActionMenu({ turn, index }) {
   };
   return (
     <React.Fragment>
-      <Tooltip title="Acciones sobre el turno">
-        <StyledTableRow
-          key={`${turn.codigo}-StyledTableRow-Key-${index}`}
-          sx={{
-            "&:hover": {
-              backgroundColor: "lightblue",
-              cursor: "pointer",
-            },
-          }}
+      <StyledTableRow
+        key={`${turn.codigo}-StyledTableRow-Key-${index}`}
+        sx={{
+          "&:hover": {
+            backgroundColor: "lightblue",
+          },
+        }}
+      >
+        <StyledTableCell
+          onClick={handleClick}
+          component="th"
+          scope="row"
+          sx={{ fontSize: "1.5rem !important" }}
         >
-          <StyledTableCell
-            onClick={handleClick}
-            component="th"
-            scope="row"
-            sx={{ fontSize: "1.5rem !important" }}
-          >
-            {turn.numero}
-          </StyledTableCell>
-          <StyledTableCell onClick={handleClick} component="th" scope="row">
-            {turn.noHistoriaClinica}
-          </StyledTableCell>
-          <StyledTableCell onClick={handleClick} component="th" scope="row">
-            {`${turn.nombres} ${turn.apellidos}`}
-          </StyledTableCell>
-          <StyledTableCell onClick={handleClick} align="left">
-            {turn.sexo}
-          </StyledTableCell>
-          <StyledTableCell onClick={handleClick} align="left">
-            {turn.nombrePadre}
-          </StyledTableCell>
-          <StyledTableCell onClick={handleClick} align="left">
-            {turn.nombreMadre}
-          </StyledTableCell>
-          <StyledTableCell onClick={handleClick} align="left">
-            {turn.nombre_Resposable}
-          </StyledTableCell>
-        </StyledTableRow>
-      </Tooltip>
+          {turn.numero}
+        </StyledTableCell>
+        <StyledTableCell onClick={handleClick} component="th" scope="row">
+          {turn.noHistoriaClinica}
+        </StyledTableCell>
+        <StyledTableCell onClick={handleClick} component="th" scope="row">
+          {`${turn.nombres} ${turn.apellidos}`}
+        </StyledTableCell>
+        <StyledTableCell onClick={handleClick} align="left">
+          {turn.sexo}
+        </StyledTableCell>
+        <StyledTableCell onClick={handleClick} align="left">
+          {turn.nombrePadre}
+        </StyledTableCell>
+        <StyledTableCell onClick={handleClick} align="left">
+          {turn.nombreMadre}
+        </StyledTableCell>
+        <StyledTableCell onClick={handleClick} align="left">
+          {turn.nombre_Resposable}
+        </StyledTableCell>
+        <StyledTableCell align="left">
+          <ButtonGroup variant="outlined" aria-label="text button group">
+            {turn.status === TURN_STATUS.onQueue && (
+              <Speech
+                text={`Turno ${turn.numero}, ${turn.nombres} ${turn.apellidos}`}
+              />
+            )}
+            {turn.status !== TURN_STATUS.onQueue && (
+              <Button
+                color="primary"
+                onClick={(e) => handleClose(e, TURN_STATUS.onQueue)}
+              >
+                En cola
+                <People />
+              </Button>
+            )}
+            {turn.status !== TURN_STATUS.attended && (
+              <Button
+                color="success"
+                onClick={(e) => handleClose(e, TURN_STATUS.attended)}
+              >
+                Atendido
+                <HowToReg />
+              </Button>
+            )}
+            {turn.status !== TURN_STATUS.absent && (
+              <Button
+                color="warning"
+                onClick={(e) => handleClose(e, TURN_STATUS.absent)}
+              >
+                Ausente
+                <CallMissedOutgoing />
+              </Button>
+            )}
+          </ButtonGroup>
+        </StyledTableCell>
+      </StyledTableRow>
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -84,34 +123,6 @@ export default function TurnActionMenu({ turn, index }) {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "center", vertical: "center" }}
       >
-        <Speech
-          text={`Turno ${turn.numero}, ${turn.nombres} ${turn.apellidos}`}
-        />
-        <Divider />
-        {turn.status !== TURN_STATUS.onQueue && (
-          <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.onQueue)}>
-            <ListItemIcon>
-              <People />
-            </ListItemIcon>
-            En Cola
-          </MenuItem>
-        )}
-        {turn.status !== TURN_STATUS.attended && (
-          <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.attended)}>
-            <ListItemIcon>
-              <HowToReg />
-            </ListItemIcon>
-            Atendido
-          </MenuItem>
-        )}
-        {turn.status !== TURN_STATUS.absent && (
-          <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.absent)}>
-            <ListItemIcon>
-              <CallMissedOutgoing />
-            </ListItemIcon>
-            Ausente
-          </MenuItem>
-        )}
         {turn.status !== TURN_STATUS.cancelled && (
           <MenuItem onClick={(e) => handleClose(e, TURN_STATUS.cancelled)}>
             <ListItemIcon>

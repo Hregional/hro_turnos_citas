@@ -1,10 +1,10 @@
 import { useSpeechSynthesis } from "react-speech-kit";
 import VoiceOverOffIcon from "@mui/icons-material/VoiceOverOff";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
-import { ListItemIcon, MenuItem } from "@mui/material";
+import { Button } from "@mui/material";
 
 const Speech = ({ text }) => {
-  const { speak, voices, cancel } = useSpeechSynthesis();
+  const { speak, voices, cancel, speaking } = useSpeechSynthesis();
   const esUS = "es-US";
   const esMX = "es-MX";
   const esES = "es-ES";
@@ -28,21 +28,21 @@ const Speech = ({ text }) => {
   const handleStopSpeaking = () => {
     cancel();
   };
-  
+
   return (
     <>
-      <MenuItem onClick={handleSpeak}>
-        <ListItemIcon>
+      {!speaking && (
+        <Button onClick={handleSpeak} color="secondary">
+          Llamar
           <RecordVoiceOverIcon />
-        </ListItemIcon>
-        Llamar paciente
-      </MenuItem>
-      <MenuItem onClick={handleStopSpeaking}>
-        <ListItemIcon>
+        </Button>
+      )}
+      {speaking && (
+        <Button onClick={handleStopSpeaking} color="secondary">
+          Detener
           <VoiceOverOffIcon />
-        </ListItemIcon>
-        Detener llamada
-      </MenuItem>
+        </Button>
+      )}
     </>
   );
 };

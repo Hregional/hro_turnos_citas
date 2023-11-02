@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { APP_URLS } from "@routes";
@@ -7,7 +7,7 @@ import { APP_URLS } from "@routes";
 import ResponsiveAppBar from "@organisms/ResponsiveAppBar";
 
 const PrivateLayout = () => {
-  const { token, sessionExpired } = useSelector((state) => state.auth);
+  const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 

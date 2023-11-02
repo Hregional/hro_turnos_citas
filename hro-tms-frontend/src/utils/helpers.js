@@ -132,3 +132,11 @@ export const formatDateTime = (dateString) => {
 export const cleanStringForEvent = (string) => {
   return string.replace(/[,\\]/g, "");
 };
+
+export const concatenateObjectValues = (obj) => Object.values(obj).join(" ");
+
+export const addSearchFields = (list) =>
+  list.map((item) => ({
+    ...item,
+    searchField: concatenateObjectValues(item).toLowerCase(),
+  }));
