@@ -73,5 +73,5 @@ Configurar cada servicio segun sea necesario
 
 ## Contribucion
 
-Las solicitudes de extracción son bienvenidas. Para cambios importantes, abra primero un problema
+Los pull requests son bienvenidos. Para cambios importantes, abra primero un problema
 para discutir lo que le gustaría cambiar.
