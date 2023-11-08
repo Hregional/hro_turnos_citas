@@ -7,6 +7,7 @@ const initialState = {
   fullScreenDialogOpen: false,
   fullScreenDialogOpenAt: "",
   appointmentDialogFormOpen: false,
+  turnDialogFormOpen: false,
 };
 
 export const adminSlice = createSlice({
@@ -26,9 +27,17 @@ export const adminSlice = createSlice({
     setAppointmentDialogFormOpen: (state, { payload }) => {
       state.appointmentDialogFormOpen = payload;
     },
+    setTurnDialogFormOpen: (state, { payload }) => {
+      state.turnDialogFormOpen = payload;
+    },
   },
 });
 
-export const { setIndex, setFilterParameter, setFullScreenDialogOpen, setAppointmentDialogFormOpen } =
-  adminSlice.actions;
+export const {
+  setIndex,
+  setFilterParameter,
+  setFullScreenDialogOpen,
+  setAppointmentDialogFormOpen,
+  setTurnDialogFormOpen,
+} = adminSlice.actions;
 export default adminSlice.reducer;

@@ -7,6 +7,7 @@ import CardContent from "@mui/material/CardContent";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import AppointmentDialogForm from "./AppointmentDialogForm";
+import TurnDialogForm from "./TurnsDialogForm";
 
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -17,8 +18,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
-import { createTurn } from "@redux/reducers/turns";
-import { setFullScreenDialogOpen, setAppointmentDialogFormOpen } from "@redux/reducers/admin";
+import {
+  setAppointmentDialogFormOpen,
+  setTurnDialogFormOpen,
+} from "@redux/reducers/admin";
 
 import TableSkeletonLoader from "@molecules/TableSkeletonLoader";
 
@@ -76,15 +79,11 @@ const buildTableHeader = () => {
 };
 
 const SearchPatientsResults = () => {
-  const [selectedPatient, setSelectePatient] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const dispatch = useDispatch();
   const { fetchingPatientsStatus, searchResult, searchResultStatus } =
     useSelector((state) => state.patients);
-  const { user, token } = useSelector((state) => state.auth);
   const { fullScreenDialogOpenAt } = useSelector((state) => state.admin);
-
-  const areaName = user?.area?.name || "";
-  const areaId = user?.area?.id || null;
 
   if (
     searchResultStatus === HTTP_STATUS_CODE_CONTENT_TOO_LARGE &&
@@ -126,22 +125,13 @@ const SearchPatientsResults = () => {
   }
 
   const handleCreateTurn = (patient) => {
-    const { noHistoriaClinica, nombres, apellidos } = patient;
-    if (
-      window.confirm(
-        `Crear turno para paciente ${noHistoriaClinica} - ${nombres} - ${apellidos}`
-      )
-    ) {
-      dispatch(
-        createTurn({ payload: { ...patient, areaName, areaId }, token })
-      );
-      dispatch(setFullScreenDialogOpen({ open: false, location: "" }));
-    }
+    setSelectedPatient(patient);
+    dispatch(setTurnDialogFormOpen(true));
   };
 
   const handleCreateAppointment = (patient) => {
-    setSelectePatient(patient);
-    dispatch(setAppointmentDialogFormOpen(true))
+    setSelectedPatient(patient);
+    dispatch(setAppointmentDialogFormOpen(true));
   };
 
   const totalPatientsFound = searchResult.length;
@@ -169,9 +159,7 @@ const SearchPatientsResults = () => {
       return (
         <StyledTableRow
           key={`${patient.codigo}-StyledTableRow-Key`}
-          onClick={() =>
-            clickHandler(patientData)
-          }
+          onClick={() => clickHandler(patientData)}
           sx={{
             "&:hover": {
               backgroundColor: "lightblue",
@@ -202,48 +190,49 @@ const SearchPatientsResults = () => {
 
   return (
     <>
-    <Card variant="outlined">
-      <CardContent sx={{ padding: "0!important" }}>
-        <Box
-          component="form"
-          sx={{
-            "& .MuiTextField-root": { marginBottom: 1, width: "100%" },
-            textAlign: "left",
-          }}
-          noValidate
-          autoComplete="off"
-        >
-          {fetchingPatientsStatus !== "loading" && (
-            <Typography variant="subtitle2">
-              Resultado: {totalPatientsFound} pacientes
-            </Typography>
-          )}
-          {fetchingPatientsStatus === "loading" && (
-            <Typography variant="subtitle2">
-              Buscando pacientes <CircularProgress size={15} />
-            </Typography>
-          )}
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label="customized table">
-              <TableHead>
-                <TableRow>{buildTableHeader()}</TableRow>
-              </TableHead>
-              <TableBody>
-                {fetchingPatientsStatus === "loading" ? (
-                  <TableSkeletonLoader
-                    rowsCount={SKELETON_PLACEHOLDER_ROWS}
-                    columnsCount={columns.length}
-                  />
-                ) : (
-                  buildTableContent()
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </CardContent>
-    </Card>
-    <AppointmentDialogForm patient={selectedPatient} />
+      <Card variant="outlined">
+        <CardContent sx={{ padding: "0!important" }}>
+          <Box
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { marginBottom: 1, width: "100%" },
+              textAlign: "left",
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            {fetchingPatientsStatus !== "loading" && (
+              <Typography variant="subtitle2">
+                Resultado: {totalPatientsFound} pacientes
+              </Typography>
+            )}
+            {fetchingPatientsStatus === "loading" && (
+              <Typography variant="subtitle2">
+                Buscando pacientes <CircularProgress size={15} />
+              </Typography>
+            )}
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <TableHead>
+                  <TableRow>{buildTableHeader()}</TableRow>
+                </TableHead>
+                <TableBody>
+                  {fetchingPatientsStatus === "loading" ? (
+                    <TableSkeletonLoader
+                      rowsCount={SKELETON_PLACEHOLDER_ROWS}
+                      columnsCount={columns.length}
+                    />
+                  ) : (
+                    buildTableContent()
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </CardContent>
+      </Card>
+      <AppointmentDialogForm patient={selectedPatient} />
+      <TurnDialogForm patient={selectedPatient} />
     </>
   );
 };

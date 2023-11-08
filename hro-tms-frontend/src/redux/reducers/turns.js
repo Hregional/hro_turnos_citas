@@ -26,6 +26,7 @@ const initialState = {
     turns: [],
     fetchingReportStatus: fetchingResourceStatuses,
   },
+  selectedClinic: "",
 };
 
 export const turnsSlice = createSlice({
@@ -46,6 +47,9 @@ export const turnsSlice = createSlice({
     },
     updateInputReportField: (state, { payload: { field, value } }) => {
       state.report.searchForm[field] = value;
+    },
+    updateSelectedClinic: (state, { payload }) => {
+      state.selectedClinic = payload;
     },
   },
   extraReducers(builder) {
@@ -151,13 +155,14 @@ export const {
   setSnackbarFailedTurnUpdateShow,
   setSnackbarSuccessTurnUpdateShow,
   updateInputReportField,
+  updateSelectedClinic,
 } = turnsSlice.actions;
 
 export default turnsSlice.reducer;
 
 export const createTurn = createAsyncThunk(
   "turns/createTurn",
-  async ({ payload, token }) => {
+  async ({ payload, token, method }) => {
     try {
       const {
         data: {
@@ -165,6 +170,7 @@ export const createTurn = createAsyncThunk(
         },
         status,
       } = await axios.post(turns.createTurn, payload, {
+        method,
         headers: {
           Authorization: token,
         },

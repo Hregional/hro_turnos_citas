@@ -21,6 +21,8 @@ const TurnSchema = new mongoose.Schema({
   areaId: Number,
   numero: Number,
   updatedAt: Date,
+  clinicId: String,
+  clinicName: String,
 });
 
 export default mongoose.model("Turn", TurnSchema);

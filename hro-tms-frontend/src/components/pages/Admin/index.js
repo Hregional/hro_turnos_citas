@@ -41,7 +41,8 @@ const Admin = () => {
     dispatch(setIndex({ index }));
   };
 
-  const handleOpenFullScreenDialogQueue = () => dispatch(setFullScreenDialogOpen({ open: true, location: "queue" }));
+  const handleOpenFullScreenDialogQueue = () =>
+    dispatch(setFullScreenDialogOpen({ open: true, location: "queue" }));
   const hanleOpenFullScreenDialogAppointments = () =>
     dispatch(setFullScreenDialogOpen({ open: true, location: "appointments" }));
 
