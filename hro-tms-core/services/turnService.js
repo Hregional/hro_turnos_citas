@@ -58,11 +58,30 @@ export const updateTurnStatus = async (id, newStatus) => {
       }
     );
     if (!updatedTurn) {
-      throw new Error("User not found or couldn't be updated");
+      throw new Error("Turn not found or couldn't be updated in updateTurnStatus");
     }
     return updatedTurn;
   } catch (error) {
-    throw new Error(`Error updating user: ${error.message}`);
+    throw new Error(`Error updating Turn status: ${error.message}`);
+  }
+};
+
+export const updateTurnClinic = async ({ _id, clinicId, clinicName }) => {
+  console.log({ _id, clinicId, clinicName });
+  try {
+    const updatedTurn = await turnModel.findByIdAndUpdate(
+      _id,
+      { clinicId, clinicName },
+      {
+        new: true,
+      }
+    );
+    if (!updatedTurn) {
+      throw new Error("Turn not found or couldn't be updated in updateTurnClinic");
+    }
+    return updatedTurn;
+  } catch (error) {
+    throw new Error(`Error updating Turn clinic: ${error.message}`);
   }
 };
 

@@ -27,6 +27,7 @@ const initialState = {
     fetchingReportStatus: fetchingResourceStatuses,
   },
   selectedClinic: "",
+  selectedTurn: null,
 };
 
 export const turnsSlice = createSlice({
@@ -50,6 +51,10 @@ export const turnsSlice = createSlice({
     },
     updateSelectedClinic: (state, { payload }) => {
       state.selectedClinic = payload;
+    },
+    setSelectedTurn: (state, { payload }) => {
+      state.selectedTurn = payload;
+      state.selectedClinic = payload.clinicId;
     },
   },
   extraReducers(builder) {
@@ -124,6 +129,31 @@ export const turnsSlice = createSlice({
         state.snackbarFailedTurnUpdateShow = true;
         state.updatingTurnStatus = "failed";
       })
+      .addCase(updateTurnClinic.pending, (state) => {
+        state.updatingTurnStatus = "loading";
+      })
+      .addCase(updateTurnClinic.fulfilled, (state, { payload }) => {
+        const { updatedTurn, status } = payload;
+        state.updateTurnClinic = status;
+        if (status === 200) {
+          state.updatingTurnStatus = "succeeded";
+          state.snackbarSuccessTurnUpdateShow = true;
+          const filteredTurns = state.turnQueue.filter(
+            (turn) => turn._id !== updatedTurn._id
+          );
+          filteredTurns.push(updatedTurn);
+          const sortedTurns = sortByProperty(filteredTurns, "numero");
+          state.turnQueue = sortedTurns;
+          localStorage.setItem("turns", JSON.stringify(state.turnQueue));
+          return;
+        }
+        state.snackbarFailedTurnUpdateShow = true;
+        state.updatingTurnStatus = "failed";
+      })
+      .addCase(updateTurnClinic.rejected, (state) => {
+        state.snackbarFailedTurnUpdateShow = true;
+        state.updatingTurnStatus = "failed";
+      })
       .addCase(getTurnsReport.pending, (state) => {
         state.report.fetchingReportStatus = "loading";
       })
@@ -135,8 +165,6 @@ export const turnsSlice = createSlice({
             turns?.length >= 0
           ) {
             state.report.fetchingReportStatus = "succeeded";
-            // const sortedturns = sortByProperty(turns, "date");
-            // state.turns = sortedturns;
             state.report.turns = turns;
             return;
           }
@@ -156,6 +184,7 @@ export const {
   setSnackbarSuccessTurnUpdateShow,
   updateInputReportField,
   updateSelectedClinic,
+  setSelectedTurn,
 } = turnsSlice.actions;
 
 export default turnsSlice.reducer;
@@ -209,6 +238,24 @@ export const updateTurnStatus = createAsyncThunk(
   async ({ payload, token }) => {
     try {
       const response = await axios.put(turns.updateTurnStatus, payload, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      return { updatedTurn: response.data, status: response.status };
+    } catch (error) {
+      return {
+        status: error.response.status,
+      };
+    }
+  }
+);
+
+export const updateTurnClinic = createAsyncThunk(
+  "turns/updateTurnClinic",
+  async ({ payload, token }) => {
+    try {
+      const response = await axios.put(turns.updateTurnClinic, payload, {
         headers: {
           Authorization: token,
         },

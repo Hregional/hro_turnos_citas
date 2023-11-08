@@ -29,6 +29,15 @@ export const updateTurnStatusService = async (payload) => {
   }
 };
 
+export const updateTurnClicinService = async (payload) => {
+  try {
+    const response = await axios.put(SERVICES.turns.updateTurnClinic, payload);
+    return { data: response.data, status: response.status };
+  } catch (error) {
+    return { data: error, status: 500 };
+  }
+};
+
 export const getTurnsReportService = async (fromDate, toDate) => {
   try {
     const response = await axios.get(

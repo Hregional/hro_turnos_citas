@@ -30,6 +30,7 @@ import { StyledTableCell, StyledTableRow } from "@utils/styles";
 import TurnActionMenu from "./TurnActionMenu";
 import TurnsBottomNavigation from "./TurnsBottomNavigation";
 import { PersonSearch as PersonSearchIcon } from "@mui/icons-material";
+import TurnDialogForm from "./TurnsDialogForm";
 
 const buildTableHeader = () => {
   const columns = [
@@ -327,6 +328,7 @@ const TurnsQueue = () => {
           </TableContainer>
         </Box>
       </CardContent>
+      <TurnDialogForm />
     </Card>
   );
 };

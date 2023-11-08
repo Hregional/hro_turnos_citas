@@ -17,17 +17,25 @@ import {
   setTurnDialogFormOpen,
   setFullScreenDialogOpen,
 } from "@redux/reducers/admin";
-import { updateSelectedClinic, createTurn } from "@redux/reducers/turns";
+import {
+  updateSelectedClinic,
+  createTurn,
+  updateTurnClinic,
+} from "@redux/reducers/turns";
 
-const TurnDialogForm = ({ patient = null, turn = null }) => {
+const TurnDialogForm = ({ patient = null }) => {
+  const { selectedTurn: turn } = useSelector((state) => state.turns);
+  const dialogTitle = patient ? "Crear turno" : "Editar turno";
+  const currentObject = patient || turn || {};
   const dispatch = useDispatch();
   const { user, token } = useSelector((state) => state.auth);
   const area = user?.area;
   const areaName = area.name || "";
   const clinics = area.area_clinics || [];
-  const subject = `${patient?.nombres || ""} ${patient?.apellidos || ""} - ${
-    patient?.noHistoriaClinica
-  }`;
+  const subject = `${currentObject?.nombres || ""} ${
+    currentObject?.apellidos || ""
+  } - ${currentObject?.noHistoriaClinica}`;
+  const action = turn ? updateTurnClinic : createTurn;
 
   const { turnDialogFormOpen } = useSelector((state) => state.admin);
   const { selectedClinic } = useSelector((state) => state.turns);
@@ -43,21 +51,19 @@ const TurnDialogForm = ({ patient = null, turn = null }) => {
   };
 
   const handleSaveTurn = () => {
-    const method = turn ? "PUT" : "POST";
     const { name: selectedClinicName } = clinics.find(
       (clinic) => clinic.number === selectedClinic
     );
     dispatch(
-      createTurn({
+      action({
         payload: {
-          ...patient,
+          ...currentObject,
           areaName,
           areaId: area.id,
           clinicId: selectedClinic,
           clinicName: selectedClinicName,
         },
         token,
-        method,
       })
     );
     dispatch(setTurnDialogFormOpen(false));
@@ -67,7 +73,7 @@ const TurnDialogForm = ({ patient = null, turn = null }) => {
   return (
     <div>
       <Dialog open={turnDialogFormOpen} onClose={handleClose} fullWidth>
-        <DialogTitle>Crear turno</DialogTitle>
+        <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>
           <FormControl fullWidth>
             <TextField

@@ -4,6 +4,7 @@ import {
   updateTurnStatusService,
   getTurnsReportService,
   buildTurnsReportCsvFileContent,
+  updateTurnClicinService,
 } from "../services/turns";
 
 export const createTurnController = async (req, res) => {
@@ -34,12 +35,26 @@ export const getTurnsOfTheDayController = async (_req, res) => {
 export const updateTurnStatusController = async (req, res) => {
   try {
     const { data, status } = await updateTurnStatusService(req.body);
+    console.log("updateTurnStatusController ===>", data, status);
     res.status(status).json(data);
   } catch (error) {
     console.log(error);
     res.status(500).json({
       message:
         "An error occurred while updating the turn status to the core service",
+    });
+  }
+};
+
+export const updateTurnClinicController = async (req, res) => {
+  try {
+    const { data, status } = await updateTurnClicinService(req.body);
+    res.status(status).json(data);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message:
+        "An error occurred while updating the turn clinic to the core service",
     });
   }
 };

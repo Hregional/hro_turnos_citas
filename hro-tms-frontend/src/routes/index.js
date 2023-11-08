@@ -17,6 +17,7 @@ export const ENDPOINTS = {
   turns: {
     createTurn: `${apiGatewayURL}turns/`,
     updateTurnStatus: `${apiGatewayURL}turns/`,
+    updateTurnClinic: `${apiGatewayURL}turns/clinic`,
     getTurns: `${apiGatewayURL}turns/today`,
     getTurnsReport: `${apiGatewayURL}turns/report/`,
     getTurnsReportCsv: `${apiGatewayURL}turns/report/csv/`,

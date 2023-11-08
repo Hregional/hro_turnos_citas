@@ -3,6 +3,7 @@ import {
   getTurnsOfTheDay,
   updateTurnStatus,
   getTurnsReport,
+  updateTurnClinic,
 } from "../services/turnService";
 
 export const createTurnController = async (req, res) => {
@@ -39,7 +40,21 @@ export const updateTurnStatusController = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      message: "An error occurred",
+      message: "An error occurred while updating turn status",
+      error: error.message,
+    });
+  }
+};
+
+export const updateTurnClinicController = async (req, res) => {
+  try {
+    const { clinicId, clinicName, _id } = req.body;
+    const updatedTurn = await updateTurnClinic({ clinicId, clinicName, _id });
+    res.status(200).json(updatedTurn);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "An error occurred while updating turn clinic",
       error: error.message,
     });
   }

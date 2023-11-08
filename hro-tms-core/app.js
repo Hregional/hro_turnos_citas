@@ -11,6 +11,7 @@ import {
   getTurnsOfTheDayRoute,
   updateTurnStatusRoute,
   getTurnsReportRoute,
+  updateTurnClinicRoute,
 } from "./routes/turnRoutes";
 
 import {
@@ -47,6 +48,7 @@ app.use(updateTurnStatusRoute);
 app.use(getTurnsReportRoute);
 app.use(createAppointmentRoute);
 app.use(getAppointmentsRoute);
+app.use(updateTurnClinicRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
