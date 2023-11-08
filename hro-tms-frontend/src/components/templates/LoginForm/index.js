@@ -7,6 +7,7 @@ import {
   updateInput,
   getAccessToken,
   setShowErrorSnackbar,
+  resetAuthState,
 } from "@redux/reducers/auth";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -37,16 +38,17 @@ export default function SignInSide() {
     tokenStatus,
     sessionExpired,
     showErrorSnackbar,
+    snackbarErrorText,
   } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(resetAuthState());
+  }, [dispatch]);
 
   useEffect(() => {
     if (token && tokenStatus === "succeeded" && !sessionExpired) {
       return navigate(APP_URLS.admin);
     }
-    // if (tokenStatus === "failed") {
-    //   toastInstance.dismiss();
-    //   toastErrorLogin();
-    // }
   }, [token, tokenStatus, sessionExpired, navigate]);
 
   const disableSubmit = tokenStatus === "loading";
@@ -112,6 +114,7 @@ export default function SignInSide() {
                   autoFocus
                   value={username}
                   onChange={(e) => handleChange("username", e.target.value)}
+                  disabled={disableSubmit}
                 />
                 <TextField
                   margin="normal"
@@ -149,7 +152,7 @@ export default function SignInSide() {
                 sx={{ width: "100%" }}
                 variant="filled"
               >
-                Credenciales invalidas, intente de nuevo
+                {snackbarErrorText}
               </Alert>
             </Snackbar>
           </Box>

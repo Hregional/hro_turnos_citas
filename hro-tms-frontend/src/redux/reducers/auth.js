@@ -14,6 +14,7 @@ const initialState = {
   password: "",
   user: null,
   showErrorSnackbar: false,
+  snackbarErrorText: "Credenciales invalidas, intente de nuevo",
 };
 
 export const authSlice = createSlice({
@@ -30,6 +31,16 @@ export const authSlice = createSlice({
     setShowErrorSnackbar: (state, { payload }) => {
       state.showErrorSnackbar = payload;
     },
+    resetAuthState: (state) => {
+      state.token = initialState.token;
+      state.tokenStatus = initialState.tokenStatus;
+      state.sessionExpired = initialState.sessionExpired;
+      state.username = initialState.username;
+      state.password = initialState.password;
+      state.user = initialState.user;
+      state.showErrorSnackbar = initialState.showErrorSnackbar;
+      state.snackbarErrorText = initialState.snackbarErrorText;
+    },
   },
   extraReducers(builder) {
     builder
@@ -41,30 +52,40 @@ export const authSlice = createSlice({
         getAccessToken.fulfilled,
         (state, { payload: { token, status } }) => {
           if (status === 200 && token) {
+            const jwtData = decodeJwt(token);
+            const user = jwtData?.user;
+            if (!user.area) {
+              state.tokenStatus = "failed";
+              state.sessionExpired = true;
+              state.showErrorSnackbar = true;
+              state.snackbarErrorText = "El usuario no está asignado a un área";
+              return;
+            }
             state.tokenStatus = "succeeded";
             state.token = token;
             state.sessionExpired = false;
             state.username = "";
             state.password = "";
-            const jwtData = decodeJwt(token);
-            const user = jwtData?.user;
             state.user = user;
             return;
           }
           state.tokenStatus = "failed";
           state.token = "";
           state.showErrorSnackbar = true;
+          state.snackbarErrorText = initialState.snackbarErrorText;
         }
       )
       .addCase(getAccessToken.rejected, (state) => {
         state.tokenStatus = "failed";
         state.token = "";
         state.showErrorSnackbar = true;
-      })
+        state.snackbarErrorText = initialState.snackbarErrorText;
+      });
   },
 });
 
-export const { updateInput, logout, setShowErrorSnackbar } = authSlice.actions;
+export const { updateInput, logout, setShowErrorSnackbar, resetAuthState } =
+  authSlice.actions;
 export default authSlice.reducer;
 
 export const getAccessToken = createAsyncThunk(
