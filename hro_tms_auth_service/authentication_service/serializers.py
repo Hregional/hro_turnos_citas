@@ -3,17 +3,24 @@ from rest_framework_simplejwt.serializers import (
     TokenVerifySerializer,
 )
 from rest_framework import serializers
-from .models import CustomUser
-from .models import Area
+from .models import CustomUser, Area, Clinic
+
+
+class ClinicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Clinic
+        fields = "__all__"
 
 
 class AreaSerializer(serializers.ModelSerializer):
+    area_clinics = ClinicSerializer(many=True)
     class Meta:
         model = Area
         fields = "__all__"
 
 
 class UserSerializer(serializers.ModelSerializer):
+    area = AreaSerializer()
     class Meta:
         model = CustomUser
         exclude = [
@@ -22,7 +29,6 @@ class UserSerializer(serializers.ModelSerializer):
             "is_staff",
             "is_active",
         ]
-        depth = 1
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
