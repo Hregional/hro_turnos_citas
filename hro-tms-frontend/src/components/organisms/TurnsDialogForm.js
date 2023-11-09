@@ -30,8 +30,8 @@ const TurnDialogForm = ({ patient = null }) => {
   const dispatch = useDispatch();
   const { user, token } = useSelector((state) => state.auth);
   const area = user?.area;
-  const areaName = area.name || "";
-  const clinics = area.area_clinics || [];
+  const areaName = area?.name || "";
+  const clinics = area?.area_clinics || [];
   const subject = `${currentObject?.nombres || ""} ${
     currentObject?.apellidos || ""
   } - ${currentObject?.noHistoriaClinica}`;
@@ -59,7 +59,7 @@ const TurnDialogForm = ({ patient = null }) => {
         payload: {
           ...currentObject,
           areaName,
-          areaId: area.id,
+          areaId: area?.id,
           clinicId: selectedClinic,
           clinicName: selectedClinicName,
         },
@@ -108,7 +108,7 @@ const TurnDialogForm = ({ patient = null }) => {
               {clinics.map((clinic, key) => (
                 <MenuItem key={key} value={clinic.number}>{`${clinic.number} ${
                   clinic.name ? "-" : ""
-                } ${clinic.name}`}</MenuItem>
+                } ${clinic.name || ""}`}</MenuItem>
               ))}
             </Select>
             {!selectedClinic && (

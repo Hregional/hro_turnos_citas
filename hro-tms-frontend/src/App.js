@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import PrivateLayout from "@templates/PrivateLayout";
+import AdminLayout from "@templates/AdminLayout";
 import LoginPage from "@pages/Login";
 import QueuePublic from "@pages/QueuePublic";
 import QueueAdmin from "@pages/Admin";
@@ -19,7 +19,7 @@ const routesConfig = [
     element: <QueuePublic />,
   },
   {
-    element: <PrivateLayout />,
+    element: <AdminLayout />,
     children: [
       {
         path: APP_URLS.admin,

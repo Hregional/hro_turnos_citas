@@ -6,13 +6,12 @@ import { APP_URLS } from "@routes";
 
 import ResponsiveAppBar from "@organisms/ResponsiveAppBar";
 
-const PrivateLayout = () => {
+const AdminLayout = () => {
   const { token } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // dispatch(verifyToken({ token, refreshToken }));
     if (!token) {
       return navigate(APP_URLS.login);
     }
@@ -26,4 +25,4 @@ const PrivateLayout = () => {
   );
 };
 
-export default PrivateLayout;
+export default AdminLayout;

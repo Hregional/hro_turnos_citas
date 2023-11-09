@@ -8,7 +8,11 @@ import {
   Badge,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+
+import { Link, useNavigate } from "react-router-dom";
+
+import { APP_URLS } from "@routes";
 
 import {
   BADGE_TURN_COLORS_MAP,
@@ -26,8 +30,18 @@ import LogoSinFondo from "@images/logo HRO sin fondo..png";
 import LogoMSPAS from "@images/LOGO MSPAS.jpeg";
 
 const QueuePublic = () => {
+  const { token } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!token) {
+      return navigate(APP_URLS.login);
+    }
+  }, [navigate, dispatch, token]);
+
   const { user } = useSelector((state) => state.auth);
-  const area = user?.area?.name;
+  const area = user?.area?.name || "";
 
   const lsTurns = localStorage.getItem("turns");
   const existingTurns = lsTurns !== "undefined" ? lsTurns || "[]" : "[]";
@@ -87,9 +101,11 @@ const QueuePublic = () => {
         >
           Sala de espera {area || ""}
         </Typography>
-        <ImageListItem key={LogoSinFondo} sx={{ maxWidth: "500px" }}>
-          <img src={LogoSinFondo} alt="logo sin fondo" />
-        </ImageListItem>
+        <Link to={APP_URLS.admin} target="_blank" rel="noopener">
+          <ImageListItem key={LogoSinFondo} sx={{ maxWidth: "500px" }}>
+            <img src={LogoSinFondo} alt="logo sin fondo" />
+          </ImageListItem>
+        </Link>
       </Grid>
       <Grid item xs={12}>
         <Grid container>
@@ -107,27 +123,43 @@ const QueuePublic = () => {
                   }}
                   key={turn._id}
                 >
-                  <Stack spacing={2} direction="row" alignItems="center">
-                    <Stack
-                      sx={{
-                        minWidth: 0,
-                        display: "flex",
-                        justifyContent: "space-between",
-                        flexDirection: "row",
-                      }}
-                    >
-                      <Typography noWrap variant="h4">
-                        <strong>{turn.numero}</strong> - {turn.nombres || ""}{" "}
-                        {turn.apellidos || ""}
-                      </Typography>
-                      <Typography sx={{ marginLeft: "3rem" }} variant="h4">
-                        {getEstimatedTimeToBeAttended(
-                          index + 1,
-                          avgWaitingTime
-                        )}
-                      </Typography>
+                  <Badge
+                    color="primary"
+                    badgeContent={`Clinica No. ${turn.clinicId} ${
+                      turn.clinicName ? "-" : ""
+                    } ${turn.clinicName || ""}`.toUpperCase()}
+                    sx={{
+                      "span": {
+                        fontSize: "16px",
+                        padding: "12px"
+                      },
+                    }}
+                  >
+                    <Stack spacing={2} direction="row" alignItems="center">
+                      <Stack
+                        sx={{
+                          minWidth: 0,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <Typography noWrap variant="h4">
+                          <strong>{turn.numero}</strong> - {turn.nombres || ""}{" "}
+                          {turn.apellidos || ""}
+                        </Typography>
+                        <Typography
+                          sx={{ marginLeft: "3rem", marginTop: 1 }}
+                          variant="h5"
+                        >
+                          {getEstimatedTimeToBeAttended(
+                            index + 1,
+                            avgWaitingTime
+                          )}
+                        </Typography>
+                      </Stack>
                     </Stack>
-                  </Stack>
+                  </Badge>
                 </Paper>
               ))}
             </Box>
