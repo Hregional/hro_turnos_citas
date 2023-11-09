@@ -1,5 +1,16 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Typography, Alert, Snackbar, TextField } from "@mui/material";
+import {
+  Typography,
+  Alert,
+  Snackbar,
+  TextField,
+  Button,
+  Menu,
+  Fade,
+  FormGroup,
+  FormControlLabel,
+  Switch,
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -21,6 +32,10 @@ import {
   setSnackbarFailedTurnUpdateShow,
   setSnackbarSuccessTurnUpdateShow,
 } from "@redux/reducers/turns";
+import {
+  setTurnsTableColumnVisibility,
+  showDefaultTableColumns,
+} from "@redux/reducers/admin";
 import { APP_URLS } from "@routes";
 import { TURN_STATUS } from "@utils/constants";
 import { sortByProperty as sortArray, addSearchFields } from "@utils/helpers";
@@ -29,26 +44,12 @@ import { StyledTableCell, StyledTableRow } from "@utils/styles";
 
 import TurnActionMenu from "./TurnActionMenu";
 import TurnsBottomNavigation from "./TurnsBottomNavigation";
-import { PersonSearch as PersonSearchIcon } from "@mui/icons-material";
+import {
+  PersonSearch as PersonSearchIcon,
+  ViewColumn as ViewColumnIcon,
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+} from "@mui/icons-material";
 import TurnDialogForm from "./TurnsDialogForm";
-
-const buildTableHeader = () => {
-  const columns = [
-    "# Turno",
-    "Historia Clinica",
-    "Nombre completo",
-    "Genero",
-    "Padre",
-    "Madre",
-    "Responsable",
-    "Acciones",
-  ];
-  return columns.map((column, index) => (
-    <StyledTableCell align="left" key={`StyledTableCellKeyCell-${index}`}>
-      {column}
-    </StyledTableCell>
-  ));
-};
 
 const TurnsQueue = () => {
   const dispatch = useDispatch();
@@ -69,9 +70,12 @@ const TurnsQueue = () => {
     snackbarSuccessTurnUpdateShow,
   } = useSelector((state) => state.turns);
 
-  const { filterParameter } = useSelector((state) => state.admin);
+  const { filterParameter, turnsTableColumns } = useSelector(
+    (state) => state.admin
+  );
 
   const [filterValue, setFilterValue] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleFilterValueChange = (e) => {
     setFilterValue(e.target.value.toLowerCase());
@@ -89,6 +93,20 @@ const TurnsQueue = () => {
 
   const handleCloseSnackbarUpdateTurnError = () =>
     dispatch(setSnackbarFailedTurnUpdateShow(false));
+
+  const buildTableHeader = () => {
+    return Object.keys(turnsTableColumns).map((column, index) => (
+      <StyledTableCell
+        align="left"
+        key={`StyledTableCellKeyCell-${index}`}
+        sx={{
+          display: turnsTableColumns[column] ? "table-cell" : "none !important",
+        }}
+      >
+        {column}
+      </StyledTableCell>
+    ));
+  };
 
   if (turnQueue.length === 0 && fetchingTurnsStatus === "succeeded") {
     return (
@@ -135,6 +153,16 @@ const TurnsQueue = () => {
       </Box>
     );
   }
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseColumnsMenu = () => {
+    setAnchorEl(null);
+  };
 
   const renderSeachTurns = () => {
     const filteredTurns = arrayToRender.filter((turn) =>
@@ -292,6 +320,55 @@ const TurnsQueue = () => {
                 Mostrar sala de espera <OpenInNew />
               </Link>
             </Typography>
+          </Box>
+          <Box sx={{}} display="flex" justifyContent="flex-end" marginRight={2}>
+            <Button
+              variant="outlined"
+              size="small"
+              endIcon={<KeyboardArrowDownIcon />}
+              startIcon={<ViewColumnIcon />}
+              onClick={handleClick}
+            >
+              Columnas
+            </Button>{" "}
+            <Menu
+              id="fade-menu"
+              MenuListProps={{
+                "aria-labelledby": "fade-button",
+              }}
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleCloseColumnsMenu}
+              TransitionComponent={Fade}
+            >
+              <FormGroup sx={{ paddingLeft: 2 }}>
+                {Object.entries(turnsTableColumns).map((column, key) => (
+                  <FormControlLabel
+                    key={key}
+                    control={<Switch checked={column[1]} />}
+                    label={column[0]}
+                    onClick={() =>
+                      dispatch(
+                        setTurnsTableColumnVisibility({
+                          column: column[0],
+                          visibility: !column[1],
+                        })
+                      )
+                    }
+                  />
+                ))}
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={() => {
+                    dispatch(showDefaultTableColumns());
+                    handleCloseColumnsMenu();
+                  }}
+                >
+                  Restablecer
+                </Button>
+              </FormGroup>
+            </Menu>
           </Box>
           <TurnsBottomNavigation
             onQueueCount={patientsOnQueue.length}

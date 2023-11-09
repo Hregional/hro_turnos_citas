@@ -8,6 +8,17 @@ const initialState = {
   fullScreenDialogOpenAt: "",
   appointmentDialogFormOpen: false,
   turnDialogFormOpen: false,
+  turnsTableColumns: {
+    "# Turno": true,
+    "Historia Clinica": true,
+    "Nombre completo": true,
+    Clinica: true,
+    Genero: true,
+    Padre: false,
+    Madre: false,
+    Responsable: true,
+    Acciones: true,
+  },
 };
 
 export const adminSlice = createSlice({
@@ -30,6 +41,15 @@ export const adminSlice = createSlice({
     setTurnDialogFormOpen: (state, { payload }) => {
       state.turnDialogFormOpen = payload;
     },
+    setTurnsTableColumnVisibility: (
+      state,
+      { payload: { column, visibility } }
+    ) => {
+      state.turnsTableColumns[column] = visibility;
+    },
+    showDefaultTableColumns: (state) => {
+      state.turnsTableColumns = initialState.turnsTableColumns;
+    },
   },
 });
 
@@ -39,5 +59,7 @@ export const {
   setFullScreenDialogOpen,
   setAppointmentDialogFormOpen,
   setTurnDialogFormOpen,
+  setTurnsTableColumnVisibility,
+  showDefaultTableColumns,
 } = adminSlice.actions;
 export default adminSlice.reducer;

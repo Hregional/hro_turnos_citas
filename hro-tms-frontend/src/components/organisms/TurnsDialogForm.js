@@ -35,7 +35,7 @@ const TurnDialogForm = ({ patient = null }) => {
   const subject = `${currentObject?.nombres || ""} ${
     currentObject?.apellidos || ""
   } - ${currentObject?.noHistoriaClinica}`;
-  const action = turn ? updateTurnClinic : createTurn;
+  const action = patient ? createTurn : updateTurnClinic;
 
   const { turnDialogFormOpen } = useSelector((state) => state.admin);
   const { selectedClinic } = useSelector((state) => state.turns);
