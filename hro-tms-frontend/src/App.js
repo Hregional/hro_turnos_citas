@@ -4,6 +4,7 @@ import AdminLayout from "@templates/AdminLayout";
 import LoginPage from "@pages/Login";
 import QueuePublic from "@pages/QueuePublic";
 import QueueAdmin from "@pages/Admin";
+import NotFound from "@pages/NotFound";
 
 import { APP_URLS } from "@routes";
 
@@ -26,6 +27,10 @@ const routesConfig = [
         element: <QueueAdmin />,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ];
 
