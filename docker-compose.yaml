@@ -12,7 +12,7 @@ services:
       - hro_tms_network
     environment:
       - AUTH_SERVICE_URL=http://auth:8000/authentication_service/
-      - PATIENTS_SERVICE_URL=https://192.168.1.10:81/api/
+      - PATIENTS_SERVICE_URL=http://192.168.1.10:81/api/
       - CORE_TURNS_SERVICE_URL=http://core:3001/
       - CORE_APPOINTMENTS_SERVICE_URL=http://core:3001/
   frontend:
@@ -28,7 +28,8 @@ services:
     networks:
       - hro_tms_network
     environment:
-      - REACT_APP_APIGW_SERVICE_URL=http://192.168.1.107:3002/ # REEMPLAZAR ESTA IP POR LA IP DEL HOST REAL
+      - REACT_APP_APIGW_SERVICE_URL=http://192.168.1.150:3002/ # REEMPLAZAR ESTA IP POR LA IP DEL HOST REAL
+      - CORS_HEADERS=$CORS_HEADERS
   auth:
     build: "./hro_tms_auth_service"
     container_name: auth_c
