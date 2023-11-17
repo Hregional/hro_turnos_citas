@@ -41,11 +41,11 @@ export const patientsSlice = createSlice({
             if (searchBy === "names") {
               state.searchResult = patients.data.map((patient) => ({
                 ...patient,
-                noHistoriaClinica: patient.historia_Clinica,
-                sexo: "",
-                nombrePadre: patient.padre,
-                nombreMadre: patient.madre,
-                nombre_Resposable: "",
+                noHistoriaClinica: patient.noHistoriaClinica,
+                sexo: patient.sexo,
+                nombrePadre: patient.nombrePadre,
+                nombreMadre: patient.nombreMadre,
+                nombre_Resposable: patient.nombre_Resposable
               }));
               return;
             }

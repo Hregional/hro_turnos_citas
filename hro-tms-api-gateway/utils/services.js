@@ -18,7 +18,7 @@ export const SERVICES = {
   },
   patients: {
     searchPatientsByClinicHistory: `${PATIENTS_SERVICE_BASE_URL}Busqueda/paciente/`,
-    searchPatientsByNames: `${PATIENTS_SERVICE_BASE_URL}BusquedaLegacy/nombre`,
+    searchPatientsByNames: `${PATIENTS_SERVICE_BASE_URL}Busqueda/paciente/nombre`,
   },
   turns: {
     createTurn: `${CORE_TURNS_MANAGEMENT_SERVICE}turns`,
