@@ -30,6 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "auth",
     "localhost",
+    "192.168.1.150"
 ]
 
 
